@@ -122,8 +122,24 @@ movie_tile_content = '''
 <div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
     <img src="{poster_image_url}" width="220" height="342">
     <h2>{movie_title}</h2>
+    <h3>{stars}</h3>
 </div>
 '''
+
+# Template for rating stars
+star_template = '''
+<img class='star' src='images/{image}' width='18px'>
+'''
+def create_rating_stars(movie):
+    """
+    Takes the movie rating and renders it as a number of stars.
+    """
+    rating_stars = ''
+    for i in range(movie.rating):
+        rating_stars += star_template.format(image='gold_star.png')
+    for i in range(5 - movie.rating):
+        rating_stars += star_template.format(image='gold_star_shadow.png')
+    return rating_stars
 
 def create_movie_tiles_content(movies):
     # The HTML content for this section of the page
@@ -134,11 +150,15 @@ def create_movie_tiles_content(movies):
         youtube_id_match = youtube_id_match or re.search(r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
         trailer_youtube_id = youtube_id_match.group(0) if youtube_id_match else None
 
+        # Create the stars
+        rating_stars = create_rating_stars(movie)
+
         # Append the tile for the movie with its content filled in
         content += movie_tile_content.format(
             movie_title=movie.title,
             poster_image_url=movie.poster_image_url,
-            trailer_youtube_id=trailer_youtube_id
+            trailer_youtube_id=trailer_youtube_id,
+            stars=rating_stars
         )
     return content
 
